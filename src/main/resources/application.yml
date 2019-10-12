@@ -1,0 +1,69 @@
+server:
+  port: 8080
+
+packageName: com.jhlc.offlineorder
+
+spring:
+  application:
+    name: offlineOrder
+  profiles:
+    active: test
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver #mysql数据库连接信息
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximum-pool-size: 50 #连接池最大连接数
+      minimum-idle: 25 #允许的最小空闲属
+      idle-timeout: 180000 #空闲超时是 180000 毫秒，当数据库连接的空闲时间大于180000毫秒时，这些空闲超时的连接会被关闭，直到超时的空闲连接数达到 minimum-idle的值
+      connection-test-query: select 1 #测试连接是否可用的query 语句 在oracle是 select 1 from dual
+  jmx:
+    default-domain: ${spring.application.name}
+  jpa:
+      open-in-view: false
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    lettuce: #lettuce客户端
+      pool:
+        min-idle: 0
+        max-idle: 8
+      shutdown-timeout: 3000
+  task: #线程池
+    pool:
+      corePoolSize: 10
+      maxPoolSize: 20
+      keepAliveSeconds: 300
+      queueCapacity: 500
+# springframework.web日志以DEBUG级别输出
+logging:
+  level:
+    org:
+      springframework:
+        web: info
+mybatis-plus:
+  configuration:
+    cache-enabled: false
+    jdbc-type-for-null: 'null'
+    map-underscore-to-camel-case: false #驼峰下划线转换
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #日志输出
+  global-config:
+    capital-mode: true #数据库大写下划线转换
+    dbColumn-underline: false
+    field-strategy: 2
+    id-type: 3
+    key-generator: com.baomidou.mybatisplus.incrementer.OracleKeyGenerator
+    logic-delete-value: 3 #逻辑删除配置（下面3个配置）,不是真实删除数据，只是逻辑删除数据
+    logic-not-delete-value: 1
+    meta-object-handler: ${packageName}.core.mybatisPlus.MyMetaObjectHandler
+    refresh-mapper: false #刷新mapper 调试神器
+    sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  type-aliases-package: com.jhlc.*.domain.* #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: ${packageName}.domain.*
+# JWT
+jwt:
+  header: Authorization
+  secret: mySecret
+  #token有效期一天
+  expiration: 86400
+  tokenHead: "Bearer "
