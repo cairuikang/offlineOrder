@@ -1,6 +1,7 @@
 package com.jhlc.offlineorder.core.security;
 
 import com.jhlc.offlineorder.domain.auth.SysRole;
+import com.jhlc.offlineorder.domain.auth.SysUser;
 import com.jhlc.offlineorder.domain.auth.SysUserRole;
 import com.jhlc.offlineorder.domain.auth.UserDetail;
 import com.jhlc.offlineorder.mapper.SysRoleMapper;
@@ -29,11 +30,12 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetail loadUserByUsername(String name) throws UsernameNotFoundException {
-        UserDetail userDetail = userMapper.selectOne(UserDetail.builder().username(name).build());
-        if (userDetail == null) {
+        SysUser sysUser= userMapper.selectOne(SysUser.builder().username(name).build());
+        if (sysUser == null) {
             throw new UsernameNotFoundException(String.format("No userDetail found with username '%s'.", name));
         }
-        SysUserRole userRole = userRoleMapper.selectOne(SysUserRole.builder().userId(userDetail.getId()).build());
+        UserDetail userDetail = sysUser.convertToUserDetail();
+        SysUserRole userRole = userRoleMapper.selectOne(SysUserRole.builder().userId(sysUser.getId()).build());
         SysRole role = roleMapper.selectById(userRole.getRoleId());
         userDetail.setSysRole(role);
         return userDetail;

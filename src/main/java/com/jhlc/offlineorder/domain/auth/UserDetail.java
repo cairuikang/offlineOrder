@@ -4,9 +4,12 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.google.common.base.Converter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,14 +27,12 @@ import java.util.List;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@TableName("sys_user")
 public class UserDetail implements UserDetails,Serializable {
-    @TableId(type = IdType.AUTO)
     private Integer id;
     private String username;
     private String password;
-    @TableField(exist = false)
     private SysRole SysRole;
     private Timestamp lastPasswordResetDate;
 
@@ -108,6 +109,26 @@ public class UserDetail implements UserDetails,Serializable {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+
+    private static class UserDTOConvert extends Converter<UserDetail, SysUser> {
+        @Override
+        protected SysUser doForward(UserDetail userDTO) {
+            SysUser user = new SysUser();
+            BeanUtils.copyProperties(userDTO,user);
+            return user;
+        }
+
+        @Override
+        protected UserDetail doBackward(SysUser user) {
+            throw new AssertionError("不支持逆向转化方法!");
+        }
+    }
+    public SysUser convertToSysUser(){
+        UserDTOConvert userDTOConvert = new UserDTOConvert();
+        SysUser convert = userDTOConvert.convert(this);
+        return convert;
     }
 
 }

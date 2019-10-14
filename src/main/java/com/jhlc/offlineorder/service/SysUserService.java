@@ -1,6 +1,7 @@
 package com.jhlc.offlineorder.service;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.jhlc.offlineorder.domain.auth.SysUser;
 import com.jhlc.offlineorder.domain.auth.UserDetail;
 
 /**
@@ -11,6 +12,6 @@ import com.jhlc.offlineorder.domain.auth.UserDetail;
  * @author wuchong123
  * @since 2019-10-12
  */
-public interface SysUserService extends IService<UserDetail> {
+public interface SysUserService extends IService<SysUser> {
 
 }

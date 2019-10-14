@@ -4,10 +4,7 @@ import com.jhlc.offlineorder.conmmon.utils.JwtUtils;
 import com.jhlc.offlineorder.core.exception.CustomException;
 import com.jhlc.offlineorder.domain.Result;
 import com.jhlc.offlineorder.domain.ResultCode;
-import com.jhlc.offlineorder.domain.auth.ResponseUserToken;
-import com.jhlc.offlineorder.domain.auth.SysRole;
-import com.jhlc.offlineorder.domain.auth.SysUserRole;
-import com.jhlc.offlineorder.domain.auth.UserDetail;
+import com.jhlc.offlineorder.domain.auth.*;
 import com.jhlc.offlineorder.mapper.SysRoleMapper;
 import com.jhlc.offlineorder.mapper.SysUserMapper;
 import com.jhlc.offlineorder.mapper.SysUserRoleMapper;
@@ -51,17 +48,18 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDetail register(UserDetail userDetail) {
-        final String username = userDetail.getUsername();
-        if (userMapper.selectOne(UserDetail.builder().username(username).build()) != null) {
+        SysUser sysUser = userDetail.convertToSysUser();
+        final String username = sysUser.getUsername();
+        if (userMapper.selectOne(SysUser.builder().username(username).build()) != null) {
             throw new CustomException(Result.failure(ResultCode.BAD_REQUEST, "用户已存在"));
         }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        final String rawPassword = encoder.encode(userDetail.getPassword());
-        userDetail.setPassword(rawPassword);
-        userMapper.insert(userDetail);
+        final String rawPassword = encoder.encode(sysUser.getPassword());
+        sysUser.setPassword(rawPassword);
+        userMapper.insert(sysUser);
 
         int roleId = userDetail.getSysRole().getId();
-        SysUserRole userRole = SysUserRole.builder().userId(userDetail.getId()).roleId(roleId).build();
+        SysUserRole userRole = SysUserRole.builder().userId(sysUser.getId()).roleId(roleId).build();
         userRoleMapper.insert(userRole);
         SysRole role = roleMapper.selectById(roleId);
         userDetail.setSysRole(role);

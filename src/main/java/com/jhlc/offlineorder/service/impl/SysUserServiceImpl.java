@@ -1,5 +1,6 @@
 package com.jhlc.offlineorder.service.impl;
 
+import com.jhlc.offlineorder.domain.auth.SysUser;
 import com.jhlc.offlineorder.domain.auth.UserDetail;
 import com.jhlc.offlineorder.mapper.SysUserMapper;
 import com.jhlc.offlineorder.service.SysUserService;
@@ -15,6 +16,6 @@ import org.springframework.stereotype.Service;
  * @since 2019-10-12
  */
 @Service
-public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, UserDetail> implements SysUserService {
+public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
 }

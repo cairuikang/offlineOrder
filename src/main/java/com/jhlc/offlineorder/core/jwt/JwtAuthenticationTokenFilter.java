@@ -28,13 +28,16 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Value("${jwt.header}")
     private String token_header;
 
+    @Value("${jwt.tokenHead}")
+    private String token_header_str;
+
     @Resource
     private JwtUtils jwtUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String auth_token = request.getHeader(this.token_header);
-        final String auth_token_start = "Bearer ";
+        final String auth_token_start = token_header_str;
         if (StringUtils.isNotEmpty(auth_token) && auth_token.startsWith(auth_token_start)) {
             auth_token = auth_token.substring(auth_token_start.length());
         } else {
